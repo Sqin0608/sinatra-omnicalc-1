@@ -32,13 +32,16 @@ get("/payment/new") do
 end
 
 get '/payment/results' do
-  @the_apr = params.fetch("users_apr").to_f.to_fs(:percentage)
+  @the_apr = params.fetch("users_apr").to_f / 100
 
   @the_year = params.fetch("users_year").to_f
 
-  @the_principal = params.fetch("users_principal").to_f.to_fs(:currency)
+  @the_principal = params.fetch("users_principal").to_f
 
-  @the_payment = (@the_apr * @the_principal)/(1 - (1 + @the_apr) ** -@the_year).to_f.to_fs(:currency)
+  monthly_rate = @the_apr / 12
+  number_of_months = @the_year * 12
+
+  @the_payment = (monthly_rate * @the_principal) / (1 - (1 + monthly_rate) ** - number_of_months)
 
   erb(:payment_results)
 end
@@ -52,7 +55,7 @@ get '/random/results' do
 
   @the_max = params.fetch("users_min").to_f
 
-  @the_random = rand(@the_min..@the_max).to_f
+  @the_random = rand(@the_min..@the_max).
 
   erb(:random_results)
 end
